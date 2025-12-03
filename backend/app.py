@@ -6,7 +6,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-DATABASE = 'C:\\Users\\LENOVO\\Documents\\airline-complete\\Default.db'
+DATABASE = '..\\Default.db'
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
