@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Havayolu Yönetim Sistemi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-dark: #1e293b;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-light: #f1f5f9;
+            --border: #e2e8f0;
+        }
+
+        .dark-mode {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: rgba(124, 58, 237, 0.2);
+            border-left-color: var(--primary);
+            color: var(--primary-light);
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .header-section h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="font-size: 20px; font-weight: bold;">✈️ Havayolu Sistem</h2>
+        </div>
+        <div>
+            <div class="nav-item active" onclick="showSection('overview')">
+                📊 Genel Bakış
+            </div>
+            <div style="padding: 8px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; padding-left: 20px; margin-top: 8px;">UÇUŞLAR</div>
+            <div class="nav-item" onclick="showSection('flights')">
+                ✈️ Uçuş Yönetimi
+            </div>
+            <div style="padding: 8px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; padding-left: 20px; margin-top: 8px;">YOLCULAR</div>
+            <div class="nav-item" onclick="showSection('passengers')">
+                👥 Yolcu Yönetimi
+            </div>
+            <div style="padding: 8px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; padding-left: 20px; margin-top: 8px;">UÇAKLAR</div>
+            <div class="nav-item" onclick="showSection('aircraft')">
+                🛩️ Uçak Envanteri
+            </div>
+            <div style="padding: 8px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; padding-left: 20px; margin-top: 8px;">BİLETLER & ÖDEMELER</div>
+            <div class="nav-item" onclick="showSection('tickets')">
+                🎫 Bilet Yönetimi
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview" class="section p-8">
+            <div class="header-section">
+                <h1>Genel Bakış</h1>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                <div class="stat-card">
+                    <div class="stat-number">245</div>
+                    <div class="stat-label">Toplam Uçuş</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,842</div>
+                    <div class="stat-label">Aktif Yolcu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">38</div>
+                    <div class="stat-label">Uçak Envanteri</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$456,280</div>
+                    <div class="stat-label">Toplam Gelir</div>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Haftalık Uçuş Aktivitesi</h2>
+                <div style="height: 300px; background: linear-gradient(to right, rgba(124,58,237,0.1), rgba(124,58,237,0.2)); border-radius: 8px; display: flex; align-items: flex-end; gap: 8px; padding: 20px; justify-content: space-around;">
+                    <div style="background-color: var(--primary); width: 30px; height: 40%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 55%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 70%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 60%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 75%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 85%;"></div>
+                    <div style="background-color: var(--primary); width: 30px; height: 65%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flights Section -->
+        <div id="flights" class="section p-8 hidden">
+            <div class="header-section">
+                <h1>Uçuş Yönetimi</h1>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openModal('flightModal')">+ Yeni Uçuş Ekle</button>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px; margin-bottom: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Uçuş Listesi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Uçuş Kodu</th>
+                            <th>Kalkış</th>
+                            <th>İniş</th>
+                            <th>Saat</th>
+                            <th>Durum</th>
+                            <th>Kapasitesi</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TK1001</td>
+                            <td>İstanbul</td>
+                            <td>Londra</td>
+                            <td>14:30</td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>250</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editFlight(1)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteFlight(1)">Sil</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TK1002</td>
+                            <td>Londra</td>
+                            <td>Paris</td>
+                            <td>16:00</td>
+                            <td><span class="badge badge-warning">Gecikmiş</span></td>
+                            <td>180</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editFlight(2)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteFlight(2)">Sil</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TK1003</td>
+                            <td>Paris</td>
+                            <td>Berlin</td>
+                            <td>18:45</td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>220</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editFlight(3)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteFlight(3)">Sil</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Passengers Section -->
+        <div id="passengers" class="section p-8 hidden">
+            <div class="header-section">
+                <h1>Yolcu Yönetimi</h1>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openModal('passengerModal')">+ Yolcu Ekle</button>
+                    <button class="btn btn-success" onclick="openModal('reservationModal')">+ Rezervasyon Yap</button>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px; margin-bottom: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Yolcu Listesi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Yolcu Adı</th>
+                            <th>Pasaport No</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Aktif Rezervasyonlar</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ahmet Yıldız</td>
+                            <td>N12345678</td>
+                            <td>ahmet@email.com</td>
+                            <td>+90 555 123 4567</td>
+                            <td>2</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editPassenger(1)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deletePassenger(1)">Sil</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fatma Kara</td>
+                            <td>N87654321</td>
+                            <td>fatma@email.com</td>
+                            <td>+90 555 987 6543</td>
+                            <td>1</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editPassenger(2)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deletePassenger(2)">Sil</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Aircraft Section -->
+        <div id="aircraft" class="section p-8 hidden">
+            <div class="header-section">
+                <h1>Uçak Envanteri</h1>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openModal('aircraftModal')">+ Uçak Ekle</button>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Uçak Listesi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Uçak Kodu</th>
+                            <th>Model</th>
+                            <th>Kapasite</th>
+                            <th>Üretim Yılı</th>
+                            <th>Durum</th>
+                            <th>Son Bakım</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TC-ABC</td>
+                            <td>Boeing 737</td>
+                            <td>150</td>
+                            <td>2018</td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>2024-11-15</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editAircraft(1)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteAircraft(1)">Sil</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TC-DEF</td>
+                            <td>Airbus A320</td>
+                            <td>180</td>
+                            <td>2020</td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>2024-10-20</td>
+                            <td>
+                                <button class="btn" style="background-color: #3b82f6; color: white; padding: 6px 12px; font-size: 12px;" onclick="editAircraft(2)">Düzenle</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteAircraft(2)">Sil</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tickets Section -->
+        <div id="tickets" class="section p-8 hidden">
+            <div class="header-section">
+                <h1>Bilet & Ödeme Yönetimi</h1>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openModal('ticketModal')">+ Bilet Satış</button>
+                    <button class="btn btn-success" onclick="openModal('paymentModal')">+ Ödeme İşlemi</button>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px; margin-bottom: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Bilet Satışları</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bilet No</th>
+                            <th>Yolcu</th>
+                            <th>Uçuş</th>
+                            <th>Tarih</th>
+                            <th>Fiyat</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BLT001234</td>
+                            <td>Ahmet Yıldız</td>
+                            <td>TK1001</td>
+                            <td>2024-12-15</td>
+                            <td>$250</td>
+                            <td><span class="badge badge-success">Satıldı</span></td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="refundTicket(1)">İade Et</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>BLT001235</td>
+                            <td>Fatma Kara</td>
+                            <td>TK1002</td>
+                            <td>2024-12-16</td>
+                            <td>$200</td>
+                            <td><span class="badge badge-success">Satıldı</span></td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="refundTicket(2)">İade Et</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="padding: 20px;">
+                <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 16px;">Ödeme İşlemleri</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>İşlem No</th>
+                            <th>Tarih</th>
+                            <th>Tuttar</th>
+                            <th>Yöntem</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PAY001001</td>
+                            <td>2024-12-10</td>
+                            <td>$250</td>
+                            <td>Kredi Kartı</td>
+                            <td><span class="badge badge-success">Başarılı</span></td>
+                        </tr>
+                        <tr>
+                            <td>PAY001002</td>
+                            <td>2024-12-11</td>
+                            <td>$200</td>
+                            <td>EFT</td>
+                            <td><span class="badge badge-success">Başarılı</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flight Modal -->
+    <div id="flightModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Yeni Uçuş Ekle</h2>
+            <form>
+                <div class="form-group">
+                    <label>Uçuş Kodu</label>
+                    <input type="text" placeholder="örn: TK1004">
+                </div>
+                <div class="form-group">
+                    <label>Kalkış Noktası</label>
+                    <input type="text" placeholder="İstanbul">
+                </div>
+                <div class="form-group">
+                    <label>İniş Noktası</label>
+                    <input type="text" placeholder="Londra">
+                </div>
+                <div class="form-group">
+                    <label>Kalkış Saati</label>
+                    <input type="time">
+                </div>
+                <div class="form-group">
+                    <label>Kapasite</label>
+                    <input type="number" placeholder="250">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('flightModal')">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('flightModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Passenger Modal -->
+    <div id="passengerModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Yeni Yolcu Ekle</h2>
+            <form>
+                <div class="form-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" placeholder="Ahmet Yıldız">
+                </div>
+                <div class="form-group">
+                    <label>Pasaport No</label>
+                    <input type="text" placeholder="N12345678">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="ahmet@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" placeholder="+90 555 123 4567">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('passengerModal')">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('passengerModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Rezervasyon Yap</h2>
+            <form>
+                <div class="form-group">
+                    <label>Yolcu Seçin</label>
+                    <select>
+                        <option>Ahmet Yıldız</option>
+                        <option>Fatma Kara</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Uçuş Seçin</label>
+                    <select>
+                        <option>TK1001 - İstanbul > Londra</option>
+                        <option>TK1002 - Londra > Paris</option>
+                        <option>TK1003 - Paris > Berlin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Koltuk Numarası</label>
+                    <input type="text" placeholder="12A">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('reservationModal')">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('reservationModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aircraft Modal -->
+    <div id="aircraftModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Yeni Uçak Ekle</h2>
+            <form>
+                <div class="form-group">
+                    <label>Uçak Kodu</label>
+                    <input type="text" placeholder="TC-GHI">
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" placeholder="Boeing 777">
+                </div>
+                <div class="form-group">
+                    <label>Kapasite</label>
+                    <input type="number" placeholder="300">
+                </div>
+                <div class="form-group">
+                    <label>Üretim Yılı</label>
+                    <input type="number" placeholder="2022">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('aircraftModal')">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('aircraftModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Bilet Satış</h2>
+            <form>
+                <div class="form-group">
+                    <label>Yolcu</label>
+                    <select>
+                        <option>Ahmet Yıldız</option>
+                        <option>Fatma Kara</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Uçuş</label>
+                    <select>
+                        <option>TK1001</option>
+                        <option>TK1002</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fiyat</label>
+                    <input type="number" placeholder="250" step="0.01">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('ticketModal')">Satış Yap</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ticketModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Ödeme İşlemi</h2>
+            <form>
+                <div class="form-group">
+                    <label>Bilet No</label>
+                    <input type="text" placeholder="BLT001234">
+                </div>
+                <div class="form-group">
+                    <label>Tuttar (USD)</label>
+                    <input type="number" placeholder="250" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Ödeme Yöntemi</label>
+                    <select>
+                        <option>Kredi Kartı</option>
+                        <option>Banka Transferi</option>
+                        <option>Nakit</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Not</label>
+                    <textarea placeholder="Ödeme notu yazınız..." rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('paymentModal')">Onayla</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+
+        // Action functions
+        function editFlight(id) {
+            console.log('Uçuş düzenleme:', id);
+            openModal('flightModal');
+        }
+
+        function deleteFlight(id) {
+            if (confirm('Bu uçuşı silmek istediğinize emin misiniz?')) {
+                console.log('Uçuş silindi:', id);
+            }
+        }
+
+        function editPassenger(id) {
+            console.log('Yolcu düzenleme:', id);
+            openModal('passengerModal');
+        }
+
+        function deletePassenger(id) {
+            if (confirm('Bu yolcuyu silmek istediğinize emin misiniz?')) {
+                console.log('Yolcu silindi:', id);
+            }
+        }
+
+        function editAircraft(id) {
+            console.log('Uçak düzenleme:', id);
+            openModal('aircraftModal');
+        }
+
+        function deleteAircraft(id) {
+            if (confirm('Bu uçağı silmek istediğinize emin misiniz?')) {
+                console.log('Uçak silindi:', id);
+            }
+        }
+
+        function refundTicket(id) {
+            if (confirm('Bu bileti iade etmek istediğinize emin misiniz?')) {
+                console.log('Bilet iade edildi:', id);
+            }
+        }
+    </script>
+</body>
+</html>
