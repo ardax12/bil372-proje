@@ -13,7 +13,7 @@ export function Sidebar({ activeMenu, setActiveMenu }: SidebarProps) {
     { id: "overview", label: "Genel Bakış", icon: BarChart3 },
     { id: "flights", label: "Uçuşlar", icon: Plane },
     { id: "passengers", label: "Yolcular", icon: Users },
-    { id: "aircraft", label: "Uçaklar", icon: Wifi },
+    { id: "aircraft", label: "Uçaklar", icon: Plane },
     { id: "tickets", label: "Biletler & Ödemeler", icon: Ticket },
   ]
 
@@ -26,7 +26,7 @@ export function Sidebar({ activeMenu, setActiveMenu }: SidebarProps) {
           </div>
           <h1 className="text-xl font-bold text-sidebar-foreground">AirCrew</h1>
         </div>
-        <p className="text-sm text-sidebar-foreground/60">Uçak Yönetim Sistemi</p>
+        <p className="text-sm text-sidebar-foreground/60">Uçuş Yönetim Sistemi</p>
       </div>
 
       <nav className="flex-1 space-y-2">
@@ -38,7 +38,7 @@ export function Sidebar({ activeMenu, setActiveMenu }: SidebarProps) {
               key={item.id}
               onClick={() => setActiveMenu(item.id)}
               variant={isActive ? "default" : "ghost"}
-              className="w-full justify-start gap-3"
+              className="w-full justify-start gap-3 text-white"
             >
               <Icon className="w-5 h-5" />
               <span>{item.label}</span>
@@ -48,9 +48,6 @@ export function Sidebar({ activeMenu, setActiveMenu }: SidebarProps) {
       </nav>
 
       <div className="pt-6 border-t border-sidebar-border">
-        <Button variant="outline" className="w-full bg-transparent">
-          Çıkış Yap
-        </Button>
       </div>
     </aside>
   )

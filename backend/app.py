@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import sqlite3
 from datetime import datetime
+import secrets
 
 app = Flask(__name__)
 CORS(app)
 
-DATABASE = 'C:\\Users\\LENOVO\\Documents\\airline-complete\\Default.db'
+DATABASE = '..\\Default.db'
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
@@ -137,6 +138,37 @@ def delete_flight(flight_id):
     conn.close()
     return jsonify({'message': 'Uçuş başarıyla silindi'})
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    """Authenticate user against login table"""
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'error': 'Username and password required'}), 400
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM login WHERE username = ? AND password = ?', (username, password))
+    user = cursor.fetchone()
+    conn.close()
+    
+    if user:
+        # Create a session token
+        session_token = secrets.token_hex(32)
+        return jsonify({
+            'success': True,
+            'token': session_token,
+            'username': username
+        }), 200
+    else:
+        return jsonify({'error': 'Invalid username or password'}), 401
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    """Logout user"""
+    return jsonify({'success': True}), 200
 
 @app.route('/api/passengers', methods=['GET'])
 def get_passengers():
